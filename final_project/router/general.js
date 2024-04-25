@@ -2,6 +2,7 @@ const express = require("express");
 let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
+const axios = require("axios");
 const public_users = express.Router();
 
 const doesExist = (username) => {
@@ -29,15 +30,31 @@ public_users.post("/register", (req, res) => {
 
 // Get the book list available in the shop
 public_users.get("/", function (req, res) {
-  res.send(JSON.stringify(books, null, 4));
+  const getBooks = new Promise((resolve, reject) => {
+    resolve(res.send(books));
+  });
+  getBooks.then(console.log("promise resolved"));
 });
 
 // Get book details based on ISBN
 public_users.get("/isbn/:isbn", function (req, res) {
-  let isbn = req.params.isbn;
-  if (books[isbn]) {
-    res.send(books[isbn]);
-  } else res.send("No book with this isbn");
+  // let isbn = req.params.isbn;
+  // if (books[isbn]) {
+  //   res.send(books[isbn]);
+  // } else res.send("No book with this isbn");
+  const getBookByIsbn = new Promise((resolve, reject) => {
+    const isbn = req.params.isbn;
+    if (books[isbn]) {
+      resolve(res.send(books[isbn]));
+    }
+    reject(res.send("No book with this isbn"));
+  });
+
+  getBookByIsbn
+    .then(() => {
+      console.log("Promise resolved");
+    })
+    .catch(() => console.log("Isbn not found"));
 });
 
 // Get book details based on author
