@@ -38,10 +38,6 @@ public_users.get("/", function (req, res) {
 
 // Get book details based on ISBN
 public_users.get("/isbn/:isbn", function (req, res) {
-  // let isbn = req.params.isbn;
-  // if (books[isbn]) {
-  //   res.send(books[isbn]);
-  // } else res.send("No book with this isbn");
   const getBookByIsbn = new Promise((resolve, reject) => {
     const isbn = req.params.isbn;
     if (books[isbn]) {
@@ -54,21 +50,27 @@ public_users.get("/isbn/:isbn", function (req, res) {
     .then(() => {
       console.log("Promise resolved");
     })
-    .catch(() => console.log("Isbn not found"));
+    .catch(() => console.lo("Isbn not found"));
 });
 
 // Get book details based on author
 public_users.get("/author/:author", function (req, res) {
-  let author = req.params.author;
-  let filteredBooks = [];
-
-  for (const i in books) {
-    if (books[i].author === author) {
-      filteredBooks.push(books[i]);
+  const getBooksByAuthor = new Promise((resolve, reject) => {
+    const author = req.params.author;
+    let filteredBooks = [];
+    for (const i in books) {
+      if (books[i].author === author) {
+        filteredBooks.push(books[i]);
+      }
     }
-  }
-
-  res.send(filteredBooks);
+    if (filteredBooks.length > 0) resolve(res.send(filteredBooks));
+    else reject(res.send("No books by this author"));
+  });
+  getBooksByAuthor
+    .then(() => console.log("promise resolver"))
+    .catch(() => {
+      console.log("No books by this author");
+    });
 });
 
 // Get all books based on title
