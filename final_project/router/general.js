@@ -67,7 +67,7 @@ public_users.get("/author/:author", function (req, res) {
     else reject(res.send("No books by this author"));
   });
   getBooksByAuthor
-    .then(() => console.log("promise resolver"))
+    .then(() => console.log("promise resolved"))
     .catch(() => {
       console.log("No books by this author");
     });
@@ -75,16 +75,22 @@ public_users.get("/author/:author", function (req, res) {
 
 // Get all books based on title
 public_users.get("/title/:title", function (req, res) {
-  let title = req.params.title;
-  let filteredBooks = [];
-
-  for (const i in books) {
-    if (books[i].title === title) {
-      filteredBooks.push(books[i]);
+  const getBooksByTitle = new Promise((resolve, reject) => {
+    const title = req.params.title;
+    let filteredBooks = [];
+    for (const i in books) {
+      if (books[i].title === title) {
+        filteredBooks.push(books[i]);
+      }
     }
-  }
-
-  res.send(filteredBooks);
+    if (filteredBooks.length > 0) resolve(res.send(filteredBooks));
+    else reject(res.send("No books with this title"));
+  });
+  getBooksByTitle
+    .then(() => console.log("promise resolved"))
+    .catch(() => {
+      console.log("No books with this tittle");
+    });
 });
 
 //  Get book review
